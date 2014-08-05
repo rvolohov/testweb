@@ -3,8 +3,20 @@ __author__ = 'roman'
 from time import gmtime,strftime
 import time
 import pytest
+import unittest
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+import selenium.webdriver.support.ui as ui
 import sys
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
 
 class WebEngine:
     def __init__(self, browserType):
@@ -29,20 +41,43 @@ class WebEngine:
     def closeBrowser(self):
         self.driver.close()
         self.utils.logMessage("Info","Test session closed")
+    def findElement(self,findBy,val):
+        if findBy == "id":
+            try:
+                element = self.driver.find_element_by_id(val)
+                #assert element == True
+                #if element:
+                self.utils.logMessage("Pass","Element " + val + " found")
+                #else:
+
+                #assert element,self.utils.logMessage("Fail","Element " + val + " cannot be found")
+            except NoSuchElementException:
+            #    self.utils.logMessage("Fail","Element " + val + " cannot be found")
+                self.utils.logMessage("Fail","Element " + val + " cannot be found")
+            #    with pytest.raises(NoSuchElementException):
+
+
+
+        elif findBy == "tbd - add other findBy":
+            element = self.driver.find_element_by_id(val)
+            assert element,self.utils.logMessage("Fail","Element " + val + " cannot be found")
+
 class Utils:
     def getTimeStamp(self):
         return strftime("%H:%M:%S",gmtime())
     def logMessage(self,status,message):
         if status == "Pass":
-            print Utils.getTimeStamp(self) + " PASS: " + message
+            print bcolors.OKGREEN + Utils.getTimeStamp(self) + " PASS: " + message
         elif status == "Fail":
-            print Utils.getTimeStamp(self) + " FAIL: " + message
+            #@pytest.mark.xfail()
+            print bcolors.FAIL + Utils.getTimeStamp(self) + " FAIL: " + message
+            #assert result.wasSuccessful(), "Suite failed"
         elif status == "Info":
-            print Utils.getTimeStamp(self) + " INFO: " + message
+            print bcolors.OKBLUE + Utils.getTimeStamp(self) + " INFO: " + message
         elif status == "Warning":
-            print Utils.getTimeStamp(self) + " Warning: " + message
+            print bcolors.WARNING + Utils.getTimeStamp(self) + " Warning: " + message
         else:
-            print "ERROR: incorrect status"
+            print bcolors.FAIL + "ERROR: incorrect status"
     def sleep(self,sleepTime):
         self.logMessage("Info","Waiting " + str(sleepTime) + " sec(s)")
         time.sleep(sleepTime)
